@@ -6,6 +6,8 @@ import br.com.movieflix.entity.Category;
 import br.com.movieflix.mapper.CategoryMapper;
 import br.com.movieflix.service.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,22 +20,24 @@ public class CategoryController {
 
     private final CategoryService categoryService;
 
+    //pega a lista de Categories do service - cria uma stream
+    //mapeia para uma Response - Retorna como uma response entity
     @GetMapping("/all")
-    public List<CategoryResponse> getAllCategories(){
-        List<Category> categories = categoryService.findAll();
-        return categories.stream()
+    public ResponseEntity<List<CategoryResponse>> getAllCategories(){
+        return ResponseEntity.ok(categoryService.findAll()
+                .stream()
                 .map(CategoryMapper::toCategoryResponse)
-                .toList();
+                .toList());
     }
 
     // pede um request - transforma esse request em um objeto -
     // Salva esse objeto no banco de dados - transforma o objeto em resposta
     // e manda de volta para o usuario
     @PostMapping()
-    public CategoryResponse saveCategory(@RequestBody CategoryRequest request){
+    public ResponseEntity<CategoryResponse> saveCategory(@RequestBody CategoryRequest request){
         Category newCategory = CategoryMapper.toCategory(request);
-        Category saveCategory = categoryService.saveCategory(newCategory);
-        return CategoryMapper.toCategoryResponse(newCategory);
+        Category savedCategory = categoryService.saveCategory(newCategory);
+        return ResponseEntity.status(HttpStatus.CREATED).body(CategoryMapper.toCategoryResponse(savedCategory));
     }
 
     @GetMapping("/{id}")
