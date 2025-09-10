@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/movieflix/category")
@@ -23,7 +22,7 @@ public class CategoryController {
     //pega a lista de Categories do service - cria uma stream
     //mapeia para uma Response - Retorna como uma response entity
     @GetMapping("/all")
-    public ResponseEntity<List<CategoryResponse>> getAllCategories(){
+    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
         return ResponseEntity.ok(categoryService.findAll()
                 .stream()
                 .map(CategoryMapper::toCategoryResponse)
@@ -34,26 +33,23 @@ public class CategoryController {
     // Salva esse objeto no banco de dados - transforma o objeto em resposta
     // e manda de volta para o usuario
     @PostMapping()
-    public ResponseEntity<CategoryResponse> saveCategory(@RequestBody CategoryRequest request){
-        Category newCategory = CategoryMapper.toCategory(request);
-        Category savedCategory = categoryService.saveCategory(newCategory);
+    public ResponseEntity<CategoryResponse> saveCategory(@RequestBody CategoryRequest request) {
+        Category savedCategory = categoryService.saveCategory(CategoryMapper.toCategory(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(CategoryMapper.toCategoryResponse(savedCategory));
     }
 
     @GetMapping("/{id}")
-    public CategoryResponse getCategoryId(@PathVariable Long id){
-        Optional<Category> optCategory = categoryService.findById(id);
-        if(optCategory.isPresent()){
-          CategoryResponse category = CategoryMapper.toCategoryResponse(optCategory.get());
-        }
-        return null;
+    public ResponseEntity<CategoryResponse> getCategoryId(@PathVariable Long id) {
+        return categoryService.findById(id)
+                .map(category -> ResponseEntity.ok(CategoryMapper.toCategoryResponse(category)))
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/delete/{id}")
-    public void deleteCategoryById(@PathVariable Long id){
+    public ResponseEntity<Void> deleteCategoryById(@PathVariable Long id) {
         categoryService.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
 
 
 }
