@@ -22,7 +22,4 @@ public class CategoryMapper {
                 .name(category.getName())
                 .build();
     }
-
-
-
 }

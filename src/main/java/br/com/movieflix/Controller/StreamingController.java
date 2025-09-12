@@ -20,7 +20,7 @@ public class StreamingController {
     private final StreamingService streamingService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<StreamingResponse>> getAllCategories() {
+    public ResponseEntity<List<StreamingResponse>> findAll() {
         return ResponseEntity.ok(streamingService.findAll()
                 .stream()
                 .map(StreamingMapper::toStreamingResponse)
@@ -28,23 +28,25 @@ public class StreamingController {
     }
 
     @PostMapping()
-    public ResponseEntity<StreamingResponse> saveCategory(@RequestBody StreamingRequest request) {
+    public ResponseEntity<StreamingResponse> save(@RequestBody StreamingRequest request) {
         Streaming savedStreaming = streamingService.save(StreamingMapper.toStreaming(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(StreamingMapper.toStreamingResponse(savedStreaming));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StreamingResponse> getCategoryId(@PathVariable Long id) {
+    public ResponseEntity<StreamingResponse> findById(@PathVariable Long id) {
         return streamingService.findById(id)
                 .map(streaming -> ResponseEntity.ok(StreamingMapper.toStreamingResponse(streaming)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteCategoryById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         streamingService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
+
+
 
 
 }

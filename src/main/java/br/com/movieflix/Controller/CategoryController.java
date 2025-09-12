@@ -22,7 +22,7 @@ public class CategoryController {
     //pega a lista de Categories do service - cria uma stream
     //mapeia para uma Response - Retorna como uma response entity
     @GetMapping("/all")
-    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
+    public ResponseEntity<List<CategoryResponse>> findAll() {
         return ResponseEntity.ok(categoryService.findAll()
                 .stream()
                 .map(CategoryMapper::toCategoryResponse)
@@ -33,23 +33,22 @@ public class CategoryController {
     // Salva esse objeto no banco de dados - transforma o objeto em resposta
     // e manda de volta para o usuario
     @PostMapping()
-    public ResponseEntity<CategoryResponse> saveCategory(@RequestBody CategoryRequest request) {
+    public ResponseEntity<CategoryResponse> save(@RequestBody CategoryRequest request) {
         Category savedCategory = categoryService.saveCategory(CategoryMapper.toCategory(request));
         return ResponseEntity.status(HttpStatus.CREATED).body(CategoryMapper.toCategoryResponse(savedCategory));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CategoryResponse> getCategoryId(@PathVariable Long id) {
+    public ResponseEntity<CategoryResponse> findById(@PathVariable Long id) {
         return categoryService.findById(id)
                 .map(category -> ResponseEntity.ok(CategoryMapper.toCategoryResponse(category)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<Void> deleteCategoryById(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         categoryService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
-
 
 }
